@@ -8,9 +8,11 @@ module "zones" {
 locals {
   dvo_records = [
     for dvo in aws_acm_certificate.main.domain_validation_options : {
-      name    = dvo.resource_record_name
-      records = [dvo.resource_record_value]
-      type    = dvo.resource_record_type
+      name               = dvo.resource_record_name
+      records            = [dvo.resource_record_value]
+      type               = dvo.resource_record_type
+      full_name_override = true
+      ttl                = 300
     }
   ]
 }
@@ -19,7 +21,7 @@ module "records" {
   source    = "terraform-aws-modules/route53/aws//modules/records"
   zone_name = local.domain_name
 
-  records = [
+  records = concat(local.dvo_records, [
     {
       name = ""
       type = "A"
@@ -29,17 +31,10 @@ module "records" {
       }
     },
     {
-      name               = local.dvo_records[0].name
-      records            = local.dvo_records[0].records
-      type               = local.dvo_records[0].type
-      full_name_override = true
-      ttl                = 300
-    },
-    {
       name    = "www"
       type    = "CNAME"
       records = [local.domain_name]
       ttl     = 3600
     }
-  ]
+  ])
 }
