@@ -5,6 +5,7 @@ locals {
 resource "cloudflare_zone" "main" {
   account_id = local.cloudflare_account_id
   zone       = "gnomebytes.com"
+  jump_start = true
 }
 
 resource "cloudflare_pages_project" "main" {
@@ -26,4 +27,10 @@ resource "cloudflare_pages_project" "main" {
       repo_name         = "gnomebytes.com"
     }
   }
+}
+
+resource "cloudflare_pages_domain" "main" {
+  account_id   = local.cloudflare_account_id
+  project_name = cloudflare_pages_project.main.name
+  domain       = "gnomebytes.com"
 }
