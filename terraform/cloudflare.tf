@@ -1,16 +1,18 @@
 locals {
   cloudflare_account_id = "160dde3020d94b782e2085939a53c2d6"
+  name                  = "gnomebytes"
+  hostname              = "${local.name}.com"
 }
 
 resource "cloudflare_zone" "main" {
   account_id = local.cloudflare_account_id
-  zone       = "gnomebytes.com"
+  zone       = local.hostname
   jump_start = true
 }
 
 resource "cloudflare_pages_project" "main" {
   account_id        = local.cloudflare_account_id
-  name              = "gnomebytes"
+  name              = local.name
   production_branch = "main"
 
   build_config {
@@ -32,5 +34,21 @@ resource "cloudflare_pages_project" "main" {
 resource "cloudflare_pages_domain" "main" {
   account_id   = local.cloudflare_account_id
   project_name = cloudflare_pages_project.main.name
-  domain       = "gnomebytes.com"
+  domain       = local.hostname
+}
+
+resource "cloudflare_record" "www" {
+  zone_id = cloudflare_zone.main.id
+  name    = "www"
+  value   = local.hostname
+  proxied = true
+  type    = "CNAME"
+}
+
+resource "cloudflare_record" "main" {
+  zone_id = cloudflare_zone.main.id
+  name    = local.hostname
+  value   = "${local.name}.pages.dev"
+  proxied = true
+  type    = "CNAME"
 }
