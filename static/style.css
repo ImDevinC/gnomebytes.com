@@ -6,6 +6,7 @@
     --tiktok-aqua: #00f2ea;
     --twitter-blue: #1DA1F2;
     --youtube-red: #FF0000;
+    --bluesky-blue: #1DA1F2;
 }
 
 body {
@@ -59,6 +60,10 @@ body {
 
 .link-youtube {
     background-color: var(--youtube-red);
+}
+
+.link-bluesky {
+    background-color: var(--bluesky-blue);
 }
 
 a {
